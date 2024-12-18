@@ -4,8 +4,8 @@
 # defaults
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
-SRC_DIR := $(realpath $(PWD)/../src)
-PROJECT_SOURCES = project.sv
+SRC_DIR = $(PWD)/../src
+PROJECT_SOURCES = tt_um_riscv_spi_wrapper.sv
 
 ifneq ($(GATES),yes)
 
@@ -32,31 +32,35 @@ VERILOG_SOURCES += $(PWD)/gate_level_netlist.v
 endif
 
 # Include the testbench sources:
-VERILOG_SOURCES += $(PWD)/tb.v 
+VERILOG_SOURCES += $(PWD)/tb.v
 TOPLEVEL = tb
 
 # MODULE is the basename of the Python test file
 MODULE = test
 
-# include cocotb's make rules to take care of the simulator setup (unless we're just building Verilog sources)
-ifneq ($(MAKECMDGOALS),verilog)
+# include cocotb's make rules to take care of the simulator setup
 include $(shell cocotb-config --makefiles)/Makefile.sim
-endif
 
+# ------------ LOCAL TESTING OF JUST SPI WRAPPER OUTSIDE MAKERCHIP ----------------
 
+SRC = ../src/spi_wrapper.sv ../src/single_port_ram.sv
 
-#-------------------
-# For TL-Verilog.
+TOP = tb_spi_wrapper
+TEST_SRC = ./tb_spi_wrapper.sv
 
-# SystemVerilog from TL-Verilog, including installation of SandPiper-SaaS.
-$(SRC_DIR)/%.sv: $(SRC_DIR)/%.tlv
-	@pip show sandpiper-saas > /dev/null || (echo "Installing sandpiper-saas..." && pip install sandpiper-saas && touch ~/.makerchip_accepted)
-	@pip show sandpiper-saas > /dev/null || (echo "Failed to install sandpiper-saas, please install manually." && exit 1)
-	cd $(SRC_DIR) && sandpiper-saas -i '$(<F)' -o '$(@F)' --outdir . --inlineGen --noDirectiveComments --noline --clkAlways --bestsv --iArgs
+BIN = $(TOP).vvp
+WAVE = $(TOP).vcd
 
-#-------------------
+$(BIN): $(SRC) $(TEST_SRC)
+	iverilog $(SRC) $(TEST_SRC) -o $(BIN) -s $(TOP) -g2012
 
+.PHONY: all clean test
 
-# Use this target to ensure that Verilog "sources" are built, in case any are generated.
-.PHONY: verilog
-verilog: $(VERILOG_SOURCES)
+all: $(BIN)
+
+test: $(BIN)
+	vvp $(BIN)
+
+view: $(BIN)
+	vvp $(BIN)
+	gtkwave $(WAVE)
