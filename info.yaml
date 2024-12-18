@@ -1,33 +1,28 @@
 # Tiny Tapeout project information
 project:
-
-  # If using an HDL, set wokwi_id as 0 and uncomment and list your source files here. 
-  wokwi_id:     111111111111111111        # If using wokwi, set this to your project's ID
-  
-  title:        "TBD"      # Project title
-  author:       "TBD"      # Your name
-  discord:      ""      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
-  description:  "TBD"      # One line description of what your project does
-  language:     "SystemVerilog" # other examples include SystemVerilog, TL-Verilog, Amaranth, VHDL, etc
-  clock_hz:     0       # Clock frequency in Hz (or 0 if not applicable)
+  title:        "RISCV32I with spi wrapper"      # Project title
+  author:       "Devin Macy"      # Your name
+  discord:      "metzeri"      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
+  description:  "A mostly support riscv32i CPU with a bare bones spi wrapper allowing you to upload programs to instruction memory and echo information sent through SPI"      # One line description of what your project does
+  language:     "SystemVerilog, TL-Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
+  clock_hz:     50000000       # Clock frequency in Hz (or 0 if not applicable)
 
   # How many tiles your design occupies? A single tile is about 167x108 uM.
-  tiles: "1x1"          # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 6x2 or 8x2
+  tiles: "8x2"          # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 6x2 or 8x2
 
   # Your top module name must start with "tt_um_". Make it unique by including your github username:
-  top_module:  "tt_um_example"
+  top_module:  "tt_um_riscv_spi_wrapper"
   
-  # List your project's Verilog source files here. (For TL-Verilog (.tlv) sources, list the corresponding (.v) generated Verilog files (which should not be committed to the repo).)
-  # Verilog/TL-Verilog source files must be in ./src and you must list each Verilog source file separately, one per line:
+  # List your project's source files here. Source files must be in ./src and you must list each source file separately, one per line:
   source_files:        
-    - "project.sv"
+    - "tt_um_riscv_spi_wrapper.sv"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 pinout:
   # Inputs
-  ui[0]: ""
-  ui[1]: ""
-  ui[2]: ""
+  ui[0]: "sclk"
+  ui[1]: "cs"
+  ui[2]: "mosi"
   ui[3]: ""
   ui[4]: ""
   ui[5]: ""
@@ -38,13 +33,13 @@ pinout:
   uo[0]: ""
   uo[1]: ""
   uo[2]: ""
-  uo[3]: ""
-  uo[4]: ""
-  uo[5]: ""
-  uo[6]: ""
-  uo[7]: ""
+  uo[3]: "miso"
+  uo[4]: "mode"
+  uo[5]: "cmd_error"
+  uo[6]: "passed"
+  uo[7]: "failed"
 
-  # Bidirectional pins
+  # Bidirectional pins (output)
   uio[0]: ""
   uio[1]: ""
   uio[2]: ""
